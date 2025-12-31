@@ -72,10 +72,12 @@ func (t *TCPTransport) handleNewConnection(conn net.Conn) {
 		}
 	}
 
+	msg := RPC{}
+
 	for {
 
-		// Decode the message on the connection stream
-		if err := t.Decode.Decode(conn); err != nil {
+		// Decode the message on the connection stream - have blocking call
+		if err := t.Decode.Decode(conn, &msg); err != nil {
 			log.Printf("message decode failed:%+v\n", err)
 			// stop reading in case of connection break or closed
 			// not in the case when some func related errors happens
@@ -83,6 +85,9 @@ func (t *TCPTransport) handleNewConnection(conn net.Conn) {
 				return
 			}
 		}
+		// After Read() from Decode reading the stream of conn
+		msg.From = conn.RemoteAddr().String()
+		log.Printf("recieved msg %v from %v\n", string(msg.Payload), msg.From)
 
 	}
 
