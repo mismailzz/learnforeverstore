@@ -1,8 +1,6 @@
 package p2p
 
 import (
-	"errors"
-	"io"
 	"log"
 	"net"
 )
@@ -72,18 +70,10 @@ func (t *TCPTransport) handleNewConnection(conn net.Conn) {
 		// blocking read call
 		_, err := conn.Read(buff)
 		if err != nil {
-			if errors.Is(err, net.ErrClosed) {
-				log.Printf("connection already closed: %v\n", conn)
-				return
-			}
-			if err == io.EOF {
-				log.Printf("client closed connection: %v\n", conn)
-				return
-			}
 			log.Printf("read error: %v from %v\n", err, conn)
 			return
 		}
-
+		log.Printf("recieved msg: %v\n", string(buff))
 	}
 
 }
