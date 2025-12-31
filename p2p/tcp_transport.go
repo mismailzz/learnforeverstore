@@ -10,6 +10,7 @@ const TransportProtocol = "tcp"
 type TCPTransport struct {
 	listenAddress string
 	listener      net.Listener
+	handshakeFunc HandshakeFunc
 }
 
 func NewTCPTransport(listenAddress string) *TCPTransport {
@@ -54,4 +55,12 @@ func (t *TCPTransport) acceptLoop() {
 
 func (t *TCPTransport) handleNewConnection(conn net.Conn) {
 	log.Printf("Handling the upcoming connection: %+v\n", conn)
+
+	if t.handshakeFunc != nil { // To Check if the func defined or not
+		if err := t.handshakeFunc(conn); err != nil {
+			log.Printf("handshake failed:%+v\n", err)
+			return
+		}
+	}
+
 }
