@@ -6,6 +6,21 @@ import (
 	"net"
 )
 
+type TCPPeer struct {
+	conn     net.Conn // represents the connection
+	outbound bool
+	// if a node/peer dialUp to other then it would be true
+	// also help to differential the handleNewConnection to differentiate
+	// whenever it has to handle the new connection
+}
+
+func NewTCPPeer(conn net.Conn, outbound bool) *TCPPeer {
+	return &TCPPeer{
+		conn:     conn,
+		outbound: outbound,
+	}
+}
+
 type TCPTransportOpts struct {
 	ListenAddress string
 	HandshakeFunc HandshakeFunc
@@ -55,18 +70,20 @@ func (t *TCPTransport) acceptLoop() {
 
 		// As connetion accepted, then proceed to handle that connection
 		// seperate and independent
-		go t.handleNewConnection(conn)
+		go t.handleNewConnection(conn, false)
 	}
 }
 
-func (t *TCPTransport) handleNewConnection(conn net.Conn) {
+func (t *TCPTransport) handleNewConnection(conn net.Conn, outbound bool) {
 	log.Printf("Handling the upcoming connection: %+v\n", conn)
-
 	defer conn.Close()
+
+	// Create a Peer (in simple terms its a conn)
+	peer := NewTCPPeer(conn, outbound)
 
 	// Handshake
 	if t.HandshakeFunc != nil { // To Check if the func defined or not
-		if err := t.HandshakeFunc(conn); err != nil {
+		if err := t.HandshakeFunc(peer); err != nil {
 			log.Printf("handshake failed:%+v\n", err)
 			return
 		}

@@ -6,3 +6,7 @@ package p2p
 type Transport interface{
 	ListenAndAccept()
 }
+
+// Peer represent any node (connection) part of the p2p network 
+// every protcol like TCP, UDP, GRPC etc has to define the Peer
+type Peer interface {}
