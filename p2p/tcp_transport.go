@@ -1,11 +1,11 @@
 package p2p
 
 import (
+	"errors"
+	"io"
 	"log"
 	"net"
 )
-
-const TransportProtocol = "tcp"
 
 type TCPTransport struct {
 	listenAddress string
@@ -19,11 +19,13 @@ func NewTCPTransport(listenAddress string) *TCPTransport {
 	}
 }
 
+// ListenAndAccept() implements the Transport interface to start listening
+// and accepting new connections
 func (t *TCPTransport) ListenAndAccept() error {
 
 	// 1. Server listen on provided address and transport protocol
 	var err error
-	t.listener, err = net.Listen(TransportProtocol, t.listenAddress)
+	t.listener, err = net.Listen("tcp", t.listenAddress)
 	if err != nil {
 		return err
 	}
@@ -56,11 +58,32 @@ func (t *TCPTransport) acceptLoop() {
 func (t *TCPTransport) handleNewConnection(conn net.Conn) {
 	log.Printf("Handling the upcoming connection: %+v\n", conn)
 
+	defer conn.Close()
+
 	if t.handshakeFunc != nil { // To Check if the func defined or not
 		if err := t.handshakeFunc(conn); err != nil {
 			log.Printf("handshake failed:%+v\n", err)
 			return
 		}
+	}
+
+	for {
+		buff := make([]byte, 1024)
+		// blocking read call
+		_, err := conn.Read(buff)
+		if err != nil {
+			if errors.Is(err, net.ErrClosed) {
+				log.Printf("connection already closed: %v\n", conn)
+				return
+			}
+			if err == io.EOF {
+				log.Printf("client closed connection: %v\n", conn)
+				return
+			}
+			log.Printf("read error: %v from %v\n", err, conn)
+			return
+		}
+
 	}
 
 }
