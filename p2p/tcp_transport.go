@@ -1,19 +1,25 @@
 package p2p
 
 import (
+	"io"
 	"log"
 	"net"
 )
 
-type TCPTransport struct {
-	listenAddress string
-	listener      net.Listener
-	handshakeFunc HandshakeFunc
+type TCPTransportOpts struct {
+	ListenAddress string
+	HandshakeFunc HandshakeFunc
+	Decode        Decoder
 }
 
-func NewTCPTransport(listenAddress string) *TCPTransport {
+type TCPTransport struct {
+	listener net.Listener
+	TCPTransportOpts
+}
+
+func NewTCPTransport(opts TCPTransportOpts) *TCPTransport {
 	return &TCPTransport{
-		listenAddress: listenAddress,
+		TCPTransportOpts: opts,
 	}
 }
 
@@ -23,11 +29,11 @@ func (t *TCPTransport) ListenAndAccept() error {
 
 	// 1. Server listen on provided address and transport protocol
 	var err error
-	t.listener, err = net.Listen("tcp", t.listenAddress)
+	t.listener, err = net.Listen("tcp", t.ListenAddress)
 	if err != nil {
 		return err
 	}
-	log.Printf("Server started listening: %+v\n", t.listenAddress)
+	log.Printf("Server started listening: %+v\n", t.ListenAddress)
 
 	// 2. Server accept the new connection on its listening address
 	t.acceptLoop()
@@ -58,22 +64,26 @@ func (t *TCPTransport) handleNewConnection(conn net.Conn) {
 
 	defer conn.Close()
 
-	if t.handshakeFunc != nil { // To Check if the func defined or not
-		if err := t.handshakeFunc(conn); err != nil {
+	// Handshake
+	if t.HandshakeFunc != nil { // To Check if the func defined or not
+		if err := t.HandshakeFunc(conn); err != nil {
 			log.Printf("handshake failed:%+v\n", err)
 			return
 		}
 	}
 
 	for {
-		buff := make([]byte, 1024)
-		// blocking read call
-		_, err := conn.Read(buff)
-		if err != nil {
-			log.Printf("read error: %v from %v\n", err, conn)
-			return
+
+		// Decode the message on the connection stream
+		if err := t.Decode.Decode(conn); err != nil {
+			log.Printf("message decode failed:%+v\n", err)
+			// stop reading in case of connection break or closed
+			// not in the case when some func related errors happens
+			if err == io.EOF || err == net.ErrClosed {
+				return
+			}
 		}
-		log.Printf("recieved msg: %v\n", string(buff))
+
 	}
 
 }
