@@ -25,6 +25,7 @@ type TCPTransportOpts struct {
 	ListenAddress string
 	HandshakeFunc HandshakeFunc
 	Decode        Decoder
+	OnPeer        OnPeer
 }
 
 type TCPTransport struct {
@@ -85,6 +86,14 @@ func (t *TCPTransport) handleNewConnection(conn net.Conn, outbound bool) {
 	if t.HandshakeFunc != nil { // To Check if the func defined or not
 		if err := t.HandshakeFunc(peer); err != nil {
 			log.Printf("handshake failed:%+v\n", err)
+			return
+		}
+	}
+
+	// OnPeer Action
+	if t.OnPeer != nil {
+		if err := t.OnPeer(peer); err != nil {
+			log.Printf("onpeer action err: %+v\n", err)
 			return
 		}
 	}

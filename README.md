@@ -10,5 +10,6 @@
 - 1.4: Decoder and Refactor (added TCPTransportOpts)
 - 1.5: RPC Message implemented (to define payload for comms), to also take the message out from Decoder func to TCPTransport
 - 1.6: Peer has been defined with TCPPeer and some refactor (replacing conn with peer)
+- 1.7 - OnPeer func added - to take action or can be used to as Notification to take action when the connection (peer) is established
 
 </details>
