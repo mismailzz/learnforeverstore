@@ -27,5 +27,18 @@
 - 2.1: Store created with writeStream, to create a file on the disk
 - 2.2: readStream and Delete function added
 - 2.3: PathTransformFunc defined as it deterministic hash the name of file and derived the pathname from the hash (helpful for discovery), FilePath also added to organize the filename/pathname, refactor the delete/other funcs logic
-- 
+
+</details>
+
+> **Note:**
+> Create the simple Store lib, having following functions
+> - Store the file in the disk, Read the file from the disk
+> - Also can delete the file from the disk 
+
+
+<details>
+<summary> PHASE - III - Server lib Implementation </summary>
+
+- 3.1: Setup a simple server, which uses the Transport (TCP) lib to start the server
+
 </details>

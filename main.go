@@ -1,6 +1,6 @@
 package main
 
-import "bytes"
+import "github.com/mismailzz/learnforeverstore/p2p"
 
 func main() {
 
@@ -14,13 +14,29 @@ func main() {
 	// 	log.Fatal(err)
 	// }
 
-	opts := StoreOpts{
-		rootDir:           "db",
-		pathTransformFunc: CASPathTransformFunc,
+	// opts := StoreOpts{
+	// 	rootDir:           "db",
+	// 	pathTransformFunc: CASPathTransformFunc,
+	// }
+
+	// store := NewStore(opts)
+	// store.writeStream("example.txt", bytes.NewReader([]byte("hello world")))
+	// store.readStream("example.txt")
+	// store.Delete("example.txt")
+
+	tcpOpts := p2p.TCPTransportOpts{
+		ListenAddress: ":3000",
+		HandshakeFunc: p2p.NoHandshakeFunc,
+		Decode:        &p2p.DefaultDecoder{},
+	}
+	tcpTransport := p2p.NewTCPTransport(tcpOpts)
+
+	serverOpts := FileServerOpts{
+		transport: tcpTransport,
 	}
 
-	store := NewStore(opts)
-	store.writeStream("example.txt", bytes.NewReader([]byte("hello world")))
-	store.readStream("example.txt")
-	store.Delete("example.txt")
+	server1 := NewFileServer(serverOpts)
+
+	server1.Start()
+
 }
