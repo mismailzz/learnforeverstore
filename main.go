@@ -15,7 +15,8 @@ func main() {
 	// }
 
 	opts := StoreOpts{
-		rootDir: "db",
+		rootDir:           "db",
+		pathTransformFunc: CASPathTransformFunc,
 	}
 
 	store := NewStore(opts)
