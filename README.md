@@ -25,5 +25,5 @@
 <summary> PHASE - II - Store Implementation</summary>
 
 - 2.1: Store created with writeStream, to create a file on the disk
-
+- 2.2: readStream and Delete function added
 </details>

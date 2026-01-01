@@ -20,5 +20,6 @@ func main() {
 
 	store := NewStore(opts)
 	store.writeStream("example.txt", bytes.NewReader([]byte("hello world")))
-
+	store.readStream("example.txt")
+	store.Delete("example.txt")
 }
