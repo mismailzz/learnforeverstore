@@ -40,5 +40,6 @@
 <summary> PHASE - III - Server lib Implementation </summary>
 
 - 3.1: Setup a simple server, which uses the Transport (TCP) lib to start the server
+- 3.2: AcceptLoop (TCPTransport) made go routine, the telnet connection written rpc message, are now being read in the server using TCPTransport read unbuffered channel
 
 </details>

@@ -6,6 +6,10 @@ import (
 	"net"
 )
 
+var (
+	TransportProtocol = "tcp"
+)
+
 type TCPPeer struct {
 	conn     net.Conn // represents the connection
 	outbound bool
@@ -31,11 +35,13 @@ type TCPTransportOpts struct {
 type TCPTransport struct {
 	listener net.Listener
 	TCPTransportOpts
+	rpchan chan RPC
 }
 
 func NewTCPTransport(opts TCPTransportOpts) *TCPTransport {
 	return &TCPTransport{
 		TCPTransportOpts: opts,
+		rpchan:           make(chan RPC), //unbuffered channel: A send blocks until some goroutine is receiving.
 	}
 }
 
@@ -45,19 +51,23 @@ func (t *TCPTransport) ListenAndAccept() error {
 
 	// 1. Server listen on provided address and transport protocol
 	var err error
-	t.listener, err = net.Listen("tcp", t.ListenAddress)
+	t.listener, err = net.Listen(TransportProtocol, t.ListenAddress)
 	if err != nil {
 		return err
 	}
 	log.Printf("Server started listening: %+v\n", t.ListenAddress)
 
 	// 2. Server accept the new connection on its listening address
-	t.acceptLoop()
+	// make it indepdent by goroutine,
+	//  otherwise it has loop, which will block ListenAndAccept
+	// Now it seperate (but depend on listener), so it only should s
+	// top when server listener died
+	go t.AcceptLoop()
 
 	return nil
 }
 
-func (t *TCPTransport) acceptLoop() {
+func (t *TCPTransport) AcceptLoop() {
 
 	for {
 		conn, err := t.listener.Accept()
@@ -113,8 +123,13 @@ func (t *TCPTransport) handleNewConnection(conn net.Conn, outbound bool) {
 		}
 		// After Read() from Decode reading the stream of conn
 		msg.From = conn.RemoteAddr().String()
-		log.Printf("recieved msg %v from %v\n", string(msg.Payload), msg.From)
+		// log.Printf("recieved msg %v from %v\n", string(msg.Payload), msg.From)
+		t.rpchan <- msg // send rpc message to channel (can be fetch by other connections)
 
 	}
 
+}
+
+func (t *TCPTransport) Consume() <-chan RPC {
+	return t.rpchan
 }
