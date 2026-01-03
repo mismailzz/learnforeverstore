@@ -44,3 +44,10 @@
 - 3.3: Setup a DialUp inside server, to which use by providing the list of peer/nodes to which we can dial - currently we are connecting to server - also eliminate the use of telnet manually
 - 3.4: Create a connectedPeerMap on the Server, so we will add newly created peer (conn) - maintain a list which peer are connected to server
 </details>
+
+<details>
+<summary> PHASE - IV - Play </summary>
+
+- 4.1: Refactor the main to push the logic in a func, based on that createt two servers (peers) and connect them
+
+</details>

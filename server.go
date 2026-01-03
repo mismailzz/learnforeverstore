@@ -24,6 +24,10 @@ func NewFileServer(opts FileServerOpts, peerList []string) *FileServer {
 	}
 }
 
+// Start() - start the server (node) to
+// - listen for peers
+// - read on its channel
+// - dial to other peers
 func (s *FileServer) Start() error {
 
 	// Start the Server (peer/node)
@@ -38,6 +42,7 @@ func (s *FileServer) Start() error {
 	return nil
 }
 
+// read rpc message of server read channel
 func (s *FileServer) readLoop() {
 
 	for {
@@ -46,6 +51,7 @@ func (s *FileServer) readLoop() {
 	}
 }
 
+// dial to the peers (other nodes/server)
 func (s *FileServer) peerNodeDial() {
 
 	for _, address := range s.peerNodeList {
@@ -53,11 +59,12 @@ func (s *FileServer) peerNodeDial() {
 			log.Printf("error while dialing %s:%+v\n", address, err)
 			continue
 		}
-		log.Printf("Dialed to address: %s\n", address)
 	}
 }
 
+// Action need to be take when connection accepted in handleNewConnection (TCPTransport)
 func (s *FileServer) OnPeer(peer p2p.Peer) error {
 	s.connectedPeerMap[peer.RemoteAddress()] = peer
+	log.Printf("PeerMap: %+v\n", s.connectedPeerMap)
 	return nil
 }
