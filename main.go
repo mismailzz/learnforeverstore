@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"time"
 
@@ -28,11 +29,13 @@ func main() {
 	}
 
 	time.Sleep(2 * time.Second)
+
 	// Check Connected Peer Dict:
 	fmt.Printf("Server 1 - PeerMap: %+v\n", s1.ConnectedPeerMap)
 	fmt.Printf("Server 2 - PeerMap: %+v\n", s2.ConnectedPeerMap)
 	fmt.Printf("Server 3 - PeerMap: %+v\n", s3.ConnectedPeerMap)
 
+	s1.StoreData("example.txt", bytes.NewReader([]byte("HelloWorld")))
 	select {} // block
 }
 
@@ -45,12 +48,17 @@ func makeServer(listenAddr string, peerlist ...string) *FileServer {
 
 	tcpTransport := p2p.NewTCPTransport(tcpOpts)
 
+	storeOpts := StoreOpts{
+		rootDir:           listenAddr + "_" + "network",
+		pathTransformFunc: CASPathTransformFunc,
+	}
+
 	serverOpts := FileServerOpts{
 		transport: tcpTransport,
 	}
 
 	peerList := peerlist
-	server := NewFileServer(serverOpts, peerList)
+	server := NewFileServer(serverOpts, storeOpts, peerList)
 	tcpTransport.OnPeer = server.OnPeer
 
 	return server

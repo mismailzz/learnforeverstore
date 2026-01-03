@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"log"
 
 	"github.com/mismailzz/learnforeverstore/p2p"
@@ -14,13 +15,15 @@ type FileServer struct {
 	FileServerOpts
 	peerNodeList     []string
 	ConnectedPeerMap map[string]p2p.Peer
+	store            Store
 }
 
-func NewFileServer(opts FileServerOpts, peerList []string) *FileServer {
+func NewFileServer(opts FileServerOpts, storeOpts StoreOpts, peerList []string) *FileServer {
 	return &FileServer{
 		FileServerOpts:   opts,
 		peerNodeList:     peerList,
 		ConnectedPeerMap: make(map[string]p2p.Peer),
+		store:            *NewStore(storeOpts),
 	}
 }
 
@@ -66,4 +69,8 @@ func (s *FileServer) peerNodeDial() {
 func (s *FileServer) OnPeer(peer p2p.Peer) error {
 	s.ConnectedPeerMap[peer.RemoteAddress()] = peer
 	return nil
+}
+
+func (s *FileServer) StoreData(filename string, r io.Reader) error {
+	return s.store.writeStream(filename, r)
 }

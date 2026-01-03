@@ -67,3 +67,10 @@ Server 1 - PeerMap: map[127.0.0.1:49269:0x14000122018 127.0.0.1:49272:0x14000122
 Server 2 - PeerMap: map[127.0.0.1:49273:0x140000a0018]
 Server 3 - PeerMap: map[]
 ```
+
+<details>
+<summary> PHASE - V - (Server lib cont. ) Broadcast Message to Peers </summary>
+
+- 5.1: By this time, we were using TCP lib only in the FileServer but now we defined the store, so that we can read/write RPC message. As for now the RPC message is written to disk using writeStream 
+
+</details>
