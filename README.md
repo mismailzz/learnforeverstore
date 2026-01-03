@@ -46,8 +46,24 @@
 </details>
 
 <details>
-<summary> PHASE - IV - Play </summary>
+<summary> PHASE - IV - Refactor </summary>
 
-- 4.1: Refactor the main to push the logic in a func, based on that createt two servers (peers) and connect them
+- 4.1: Refactor the main to push the logic in a func, based on that created two servers (peers) and connect them
 
 </details>
+
+
+```bash
+
+# Below is our current setup - PDF p2p1.pdf
+2026/01/03 19:31:56 Server started listening: :3000
+2026/01/03 19:31:56 error while dialing :dial tcp: missing address
+2026/01/03 19:31:58 Server started listening: :4001
+2026/01/03 19:31:58 Handling the upcoming connection: &{conn:{fd:0x14000120100}}
+2026/01/03 19:32:00 Server started listening: :4002
+2026/01/03 19:32:00 Handling the upcoming connection: &{conn:{fd:0x14000120280}}
+2026/01/03 19:32:00 Handling the upcoming connection: &{conn:{fd:0x1400009a080}}
+Server 1 - PeerMap: map[127.0.0.1:49269:0x14000122018 127.0.0.1:49272:0x14000122030]
+Server 2 - PeerMap: map[127.0.0.1:49273:0x140000a0018]
+Server 3 - PeerMap: map[]
+```

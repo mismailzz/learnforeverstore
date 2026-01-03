@@ -13,14 +13,14 @@ type FileServerOpts struct {
 type FileServer struct {
 	FileServerOpts
 	peerNodeList     []string
-	connectedPeerMap map[string]p2p.Peer
+	ConnectedPeerMap map[string]p2p.Peer
 }
 
 func NewFileServer(opts FileServerOpts, peerList []string) *FileServer {
 	return &FileServer{
 		FileServerOpts:   opts,
 		peerNodeList:     peerList,
-		connectedPeerMap: make(map[string]p2p.Peer),
+		ConnectedPeerMap: make(map[string]p2p.Peer),
 	}
 }
 
@@ -64,7 +64,6 @@ func (s *FileServer) peerNodeDial() {
 
 // Action need to be take when connection accepted in handleNewConnection (TCPTransport)
 func (s *FileServer) OnPeer(peer p2p.Peer) error {
-	s.connectedPeerMap[peer.RemoteAddress()] = peer
-	log.Printf("PeerMap: %+v\n", s.connectedPeerMap)
+	s.ConnectedPeerMap[peer.RemoteAddress()] = peer
 	return nil
 }
