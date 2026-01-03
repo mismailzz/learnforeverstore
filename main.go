@@ -1,6 +1,11 @@
 package main
 
-import "github.com/mismailzz/learnforeverstore/p2p"
+import (
+	"fmt"
+	"time"
+
+	"github.com/mismailzz/learnforeverstore/p2p"
+)
 
 func main() {
 
@@ -37,8 +42,13 @@ func main() {
 
 	peerList := []string{":3000"}
 	server1 := NewFileServer(serverOpts, peerList)
+	tcpTransport.OnPeer = server1.OnPeer
 
 	server1.Start()
+
+	time.Sleep(2 * time.Second)
+	// Check connected peers in server1
+	fmt.Println(server1.connectedPeerMap)
 
 	select {} // block
 }

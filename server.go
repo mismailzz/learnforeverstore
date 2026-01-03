@@ -12,13 +12,15 @@ type FileServerOpts struct {
 
 type FileServer struct {
 	FileServerOpts
-	peerNodeList []string
+	peerNodeList     []string
+	connectedPeerMap map[string]p2p.Peer
 }
 
 func NewFileServer(opts FileServerOpts, peerList []string) *FileServer {
 	return &FileServer{
-		FileServerOpts: opts,
-		peerNodeList:   peerList,
+		FileServerOpts:   opts,
+		peerNodeList:     peerList,
+		connectedPeerMap: make(map[string]p2p.Peer),
 	}
 }
 
@@ -53,4 +55,9 @@ func (s *FileServer) peerNodeDial() {
 		}
 		log.Printf("Dialed to address: %s\n", address)
 	}
+}
+
+func (s *FileServer) OnPeer(peer p2p.Peer) error {
+	s.connectedPeerMap[peer.RemoteAddress()] = peer
+	return nil
 }

@@ -11,7 +11,9 @@ type Transport interface {
 
 // Peer represent any node (connection) part of the p2p network
 // every protcol like TCP, UDP, GRPC etc has to define the Peer
-type Peer interface{}
+type Peer interface {
+	RemoteAddress() string
+}
 
 // OnPeer func to take a needed action on the peer
 // when the connection is established (if required)

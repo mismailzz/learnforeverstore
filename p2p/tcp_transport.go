@@ -25,6 +25,10 @@ func NewTCPPeer(conn net.Conn, outbound bool) *TCPPeer {
 	}
 }
 
+func (p *TCPPeer) RemoteAddress() string {
+	return p.conn.RemoteAddr().String()
+}
+
 type TCPTransportOpts struct {
 	ListenAddress string
 	HandshakeFunc HandshakeFunc

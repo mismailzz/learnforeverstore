@@ -42,5 +42,5 @@
 - 3.1: Setup a simple server, which uses the Transport (TCP) lib to start the server
 - 3.2: AcceptLoop (TCPTransport) made go routine, the telnet connection written rpc message, are now being read in the server using TCPTransport read unbuffered channel
 - 3.3: Setup a DialUp inside server, to which use by providing the list of peer/nodes to which we can dial - currently we are connecting to server - also eliminate the use of telnet manually
-
+- 3.4: Create a connectedPeerMap on the Server, so we will add newly created peer (conn) - maintain a list which peer are connected to server
 </details>
