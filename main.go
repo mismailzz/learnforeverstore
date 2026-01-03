@@ -35,8 +35,10 @@ func main() {
 		transport: tcpTransport,
 	}
 
-	server1 := NewFileServer(serverOpts)
+	peerList := []string{":3000"}
+	server1 := NewFileServer(serverOpts, peerList)
 
 	server1.Start()
 
+	select {} // block
 }

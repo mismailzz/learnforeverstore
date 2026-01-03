@@ -6,6 +6,7 @@ package p2p
 type Transport interface {
 	ListenAndAccept() error
 	Consume() <-chan RPC
+	Dial(string) error
 }
 
 // Peer represent any node (connection) part of the p2p network

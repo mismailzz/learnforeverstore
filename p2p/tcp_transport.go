@@ -133,3 +133,8 @@ func (t *TCPTransport) handleNewConnection(conn net.Conn, outbound bool) {
 func (t *TCPTransport) Consume() <-chan RPC {
 	return t.rpchan
 }
+
+func (t *TCPTransport) Dial(address string) error {
+	_, err := net.Dial(TransportProtocol, address)
+	return err
+}

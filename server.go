@@ -12,12 +12,13 @@ type FileServerOpts struct {
 
 type FileServer struct {
 	FileServerOpts
+	peerNodeList []string
 }
 
-func NewFileServer(opts FileServerOpts) *FileServer {
-
+func NewFileServer(opts FileServerOpts, peerList []string) *FileServer {
 	return &FileServer{
 		FileServerOpts: opts,
+		peerNodeList:   peerList,
 	}
 }
 
@@ -28,15 +29,28 @@ func (s *FileServer) Start() error {
 		return err
 	}
 
-	s.connChanReadLoop()
+	go s.readLoop()
+
+	s.peerNodeDial()
 
 	return nil
 }
 
-func (s *FileServer) connChanReadLoop() {
+func (s *FileServer) readLoop() {
 
 	for {
-		rpc := <-s.transport.Consume()
+		rpc := <-s.transport.Consume() // blocking call
 		log.Printf("msg recieved %s from %+v\n", rpc.Payload, rpc.From)
+	}
+}
+
+func (s *FileServer) peerNodeDial() {
+
+	for _, address := range s.peerNodeList {
+		if err := s.transport.Dial(address); err != nil {
+			log.Printf("error while dialing %s:%+v\n", address, err)
+			continue
+		}
+		log.Printf("Dialed to address: %s\n", address)
 	}
 }
